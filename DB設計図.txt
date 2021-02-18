@@ -1,0 +1,49 @@
+新しいユーザー
+create user bowner
+identified by bo
+default tablespace users
+temporary tablespace temp
+quota unlimited on users;
+
+与えた権限
+grant create session,create table,create view,create sequence,create synonym,create public synonym to bowner;
+
+アカウント切り替え
+conn bowner/bo
+
+スレッドのテーブル
+create table board_thread(
+th_id number(6) primary key,
+th_title varchar2(50) not null,
+th_category varchar2(20),
+th_date date default sysdate,
+th_views number(4),
+th_details varchar2(1000)
+);
+
+※テスト用のinsert文
+insert into board_thread(
+th_id,
+th_title
+)values(
+'777777',
+'テスト用'
+);
+
+
+レスのテーブル
+create table board_res(
+th_id number(6) references board_thread(th_id),
+res_id number(8) primary key,
+res_date date default sysdate,
+res_text varchar2(1000) not null,
+res_likes number(3),
+res_count number(4)
+);
+
+ユーザー情報のテーブル
+create table board_user(
+user_id number(6) primary key,
+user_name varchar(24),
+user_pass number(10)
+);

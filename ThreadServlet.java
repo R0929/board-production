@@ -7,41 +7,37 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import tera.*;
+import bean.ThreadBean;
 
 public class ThreadServlet extends HttpServlet {
+    public void doPost(HttpServletRequest req,HttpServletResponse res)
+        throws IOException,ServletException{
+            res.setCharacterEncoding("Windows-31J");
+                DBAccess dba=new DBAccess();
+                ArrayList List = new ArrayList();
+                
+               	String title = req.getParameter("title");
+				String tag = req.getParameter("tag");
+				String comment = req.getParameter("comment");
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
-		//POST要求によって送信された文字列をクライアントで
-		//エンコードしたときの文字コードを指定する
-		//これを指定しないと文字化けする可能性がある
-		req.setCharacterEncoding("Windows-31J");
+                ThreadBean bean = new ThreadBean();
 
-		//POST要求によって送信されたパラメータを取得する
-        String ti=req.getParameter("title");
-        String c=req.getParameter("details");
+                bean.setTitle(title);
+                bean.setTag(tag);
+                bean.setComment(comment);
 
-		//ArrayListを使用
-        ArrayList<ThreadBean> threads = new ArrayList<ThreadBean>();
-		DBAccess orcl = new DBAccess();
+                dba.ThreadGet(title,tag,comment);
 
-		//リストに追加する
-		orcl.ThreadGet(ti,c);
+                req.setAttribute("title",title);
+                req.setAttribute("tag",tag);
+                req.setAttribute("ThreadID",ThreadID);
+                req.setAttribute("comment",comment);
+    
+                /%!--騾∽ｿ｡蜈医�ｮURL--%/
+                RequestDispatcher ResThread=req.getRequestDispather("Response.jsp");
+                RequestDispatcher topPage=req.getRequestDispather("title.jsp");
 
-		threads = orcl.getThread();
-
-		//HttpServletRequestの実装クラスのインスタンスに
-		//threadsという名前でデータを登録する
-		req.setAttribute("threads",threads);
-
-		//RequestDispatcherインターフェイスを実装するクラスの
-		//インスタンスを取得する
-		//引数は転送先のURL
-		RequestDispatcher dispatcher=
-			req.getRequestDispatcher("titleJSP");
-
-		//転送先に要求を転送する
-		dispatcher.forward(req,res);
-	}
+                ResThread.forward(req,res);
+                topPage.forward(req,res);
+        }
 }
